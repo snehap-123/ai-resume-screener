@@ -1,12 +1,9 @@
 import streamlit as st
 import pdfplumber
-import spacy
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Load NLP model
-nlp = spacy.load("en_core_web_sm")
 
 # Page config
 st.set_page_config(page_title="AI Resume Screener", layout="wide")
@@ -54,13 +51,16 @@ def extract_text(pdf):
             text += page.extract_text() or ""
     return text
 
-
 def extract_keywords(text):
-    doc = nlp(text.lower())
-    return [
-        token.text for token in doc
-        if token.is_alpha and not token.is_stop and token.pos_ in ["NOUN", "PROPN"]
-    ]
+    words = text.lower().split()
+    
+    # simple stopwords
+    stopwords = ["the", "and", "is", "in", "to", "of", "for", "with", "on", "at", "by"]
+    
+    keywords = [word for word in words if word.isalpha() and word not in stopwords and len(word) > 2]
+    
+    return keywords
+
 
 
 # Skill categories
